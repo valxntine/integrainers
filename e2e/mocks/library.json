@@ -1,0 +1,32 @@
+[
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/library/book/iban/123"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "iban": "123",
+        "author": "Amy Bull",
+        "name": "Amys Book",
+        "pages": 666
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/library/book/iban/321"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "iban": "321",
+        "author": "Valentine Bott",
+        "name": "Valentines Book",
+        "pages": 69420
+      }
+    }
+  }
+]
