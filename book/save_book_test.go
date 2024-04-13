@@ -14,7 +14,7 @@ type MockGetter struct {
 	Called     int
 }
 
-func (bg *MockGetter) GetBook(ctx context.Context, iban string) (entity.Book, error) {
+func (bg *MockGetter) GetBook(ctx context.Context, isbn int) (entity.Book, error) {
 	bg.Called++
 	return bg.BookReturn, bg.ErrReturn
 }
@@ -32,11 +32,11 @@ func (bs *MockSaver) Save(ctx context.Context, book entity.Book) error {
 func TestSave(t *testing.T) {
 	var (
 		ctx      context.Context
-		testIban string
+		testISBN int
 	)
 
 	ctx = context.Background()
-	testIban = "123"
+	testISBN = 123
 
 	t.Run("something fun", func(t *testing.T) {
 		mockGetter := &MockGetter{
@@ -44,7 +44,7 @@ func TestSave(t *testing.T) {
 			BookReturn: entity.Book{
 				Author: "Valentine",
 				Name:   "Vals Book",
-				Iban:   testIban,
+				ISBN:   testISBN,
 				Pages:  321,
 			},
 		}
@@ -53,12 +53,12 @@ func TestSave(t *testing.T) {
 
 		bs := book.New(mockGetter, mockSaver)
 
-		r, err := bs.Save(ctx, testIban)
+		r, err := bs.Save(ctx, testISBN)
 		if err != nil {
 			t.Fail()
 		}
 
-		expectedResponse := book.Response{Iban: "123"}
+		expectedResponse := book.Response{ISBN: 123}
 
 		assert.Equal(t, expectedResponse, r)
 		assert.Equal(t, 1, mockGetter.Called)

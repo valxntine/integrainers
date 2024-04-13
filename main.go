@@ -1,8 +1,9 @@
-package integrainers
+package main
 
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/valxntine/integrainers/app"
 	"github.com/valxntine/integrainers/book"
@@ -10,6 +11,7 @@ import (
 	"github.com/valxntine/integrainers/services/library"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -32,19 +34,22 @@ func main() {
 	}
 
 	repo := book.NewRepository(db)
-	httpClient := http.DefaultClient
+	httpClient := http.Client{
+		Transport: http.DefaultTransport,
+		Timeout:   30 * time.Second,
+	}
 
-	libraryClient := library.New(*httpClient, cfg.LibraryHost)
+	libraryClient := library.New(httpClient, cfg.LibraryHost)
 
-	book := book.New(libraryClient, repo)
+	bookSvc := book.New(libraryClient, repo)
 
 	application := app.App{
 		Config:    cfg,
 		Router:    mux.NewRouter(),
-		BookSaver: book,
+		BookSaver: bookSvc,
 	}
 
-	if err := application.Routes(); err != nil {
+	if err = application.Routes(); err != nil {
 		log.Fatal(err)
 	}
 	application.Run()

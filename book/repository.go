@@ -3,7 +3,9 @@ package book
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/valxntine/integrainers/entity"
+	"strconv"
 )
 
 //var ErrorDatabaseConnectionFailed = errors.New("database connection failed")
@@ -32,11 +34,13 @@ func NewRepository(db *sql.DB) Repository {
 
 func (r Repository) Save(ctx context.Context, book entity.Book) error {
 	query := `
-		INSERT INTO book (iban, author, name, pages) values (?, ?, ?, ?)`
+		INSERT INTO book (isbn, author, name, pages) values (?, ?, ?, ?)`
 
-	_, err := r.db.ExecContext(ctx, query, book.Iban, book.Author, book.Name, book.Pages)
+	isbnStr := strconv.Itoa(book.ISBN)
+
+	_, err := r.db.ExecContext(ctx, query, isbnStr, book.Author, book.Name, book.Pages)
 	if err != nil {
-		return err
+		return fmt.Errorf("exec context: %w", err)
 	}
 	return nil
 }

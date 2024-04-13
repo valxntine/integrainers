@@ -2,25 +2,21 @@
 
 # BUILD STAGE - Stage for building the app
 #
-FROM golang:1.21-bullseye as base_build_app
+FROM golang:1.21-bullseye
 #
 #RUN mkdir -p -m 0600 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
 #RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
 
-WORKDIR /booky/
+WORKDIR /booky
 
 COPY go.mod go.sum Makefile ./
 
 RUN make deps
 
-FROM base_build_app as build_app
-
 COPY . /booky
 
-RUN make build
+RUN go build -o /book-service
 
-# TEST STAGE - Stage for testing, includes dev dependencies
-#
-FROM base_build_app as test
+EXPOSE 8088
 
-COPY --from=build_app /booky/ .
+CMD ["/book-service"]

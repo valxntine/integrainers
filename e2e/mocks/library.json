@@ -2,12 +2,12 @@
   {
     "httpRequest": {
       "method": "GET",
-      "path": "/library/book/iban/123"
+      "path": "/library/book/isbn/123"
     },
     "httpResponse": {
       "statusCode": 200,
       "body": {
-        "iban": "123",
+        "isbn": 123,
         "author": "Amy Bull",
         "name": "Amys Book",
         "pages": 666
@@ -17,12 +17,12 @@
   {
     "httpRequest": {
       "method": "GET",
-      "path": "/library/book/iban/321"
+      "path": "/library/book/isbn/321"
     },
     "httpResponse": {
       "statusCode": 200,
       "body": {
-        "iban": "321",
+        "isbn": 321,
         "author": "Valentine Bott",
         "name": "Valentines Book",
         "pages": 69420

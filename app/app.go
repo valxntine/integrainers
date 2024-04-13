@@ -32,6 +32,6 @@ func (a *App) Run() {
 }
 
 func (a *App) Routes() error {
-	a.Router.Handle("/api/v1/books/", handlers.SaveBook(a.BookSaver)).Methods(http.MethodPost)
+	a.Router.Handle("/api/v1/books", handlers.SaveBook(a.BookSaver)).Methods(http.MethodPost)
 	return nil
 }

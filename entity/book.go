@@ -3,6 +3,6 @@ package entity
 type Book struct {
 	Author string `json:"author"`
 	Name   string `json:"name"`
-	Iban   string `json:"iban"`
+	ISBN   int    `json:"isbn"`
 	Pages  int    `json:"pages"`
 }

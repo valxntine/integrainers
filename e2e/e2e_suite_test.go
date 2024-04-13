@@ -3,10 +3,10 @@ package e2e
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"github.com/valxntine/integrainers/containers"
-	"os"
 	"testing"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -18,11 +18,9 @@ func TestEndToEnd(t *testing.T) {
 }
 
 var (
-	db *sql.DB
-)
-
-const (
-	bookHost = "http://book-service:8081"
+	db          *sql.DB
+	c           *containers.TestContainers
+	bookService string
 )
 
 var _ = BeforeSuite(func() {
@@ -30,9 +28,12 @@ var _ = BeforeSuite(func() {
 
 	ctx := context.Background()
 
-	_, err = containers.StartTestContainers(ctx)
+	c, err = containers.StartTestContainers(ctx)
+	Expect(err).ToNot(HaveOccurred())
 
-	db, err = sql.Open("mysql", MakeConnectionString())
+	bookService = c.Service.URI
+
+	db, err = sql.Open("mysql", c.DB.Connection)
 	Expect(err).ToNot(HaveOccurred())
 
 	_, err = db.Exec("TRUNCATE book;")
@@ -40,33 +41,4 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	Expect(db.Close()).To(Succeed())
 })
-
-func MakeConnectionString() string {
-	// DOCKER
-	u := os.Getenv("DB_USER")
-	pw := os.Getenv("DB_PASSWORD")
-	d := os.Getenv("DB_NAME")
-	p := os.Getenv("DB_PORT")
-	h := os.Getenv("DB_HOST")
-
-	// Set defaults for local testing against the mysql container started by docker_up
-	if u == "" {
-		u = "book_db"
-	}
-	if pw == "" {
-		pw = "book_db"
-	}
-	if d == "" {
-		d = "book_db"
-	}
-	if p == "" {
-		p = "3306"
-	}
-	if h == "" {
-		h = "127.0.0.1"
-	}
-
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", u, pw, h, p, d)
-}

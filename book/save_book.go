@@ -2,11 +2,12 @@ package book
 
 import (
 	"context"
+	"fmt"
 	"github.com/valxntine/integrainers/entity"
 )
 
 type Getter interface {
-	GetBook(ctx context.Context, iban string) (entity.Book, error)
+	GetBook(ctx context.Context, isbn int) (entity.Book, error)
 }
 
 type Saver interface {
@@ -26,17 +27,17 @@ func New(getter Getter, saver Saver) Book {
 }
 
 type Response struct {
-	Iban string `json:"iban"`
+	ISBN int `json:"isbn"`
 }
 
-func (b Book) Save(ctx context.Context, iban string) (Response, error) {
-	bookFromService, err := b.BookGetter.GetBook(ctx, iban)
+func (b Book) Save(ctx context.Context, isbn int) (Response, error) {
+	bookFromService, err := b.BookGetter.GetBook(ctx, isbn)
 	if err != nil {
-		return Response{}, err
+		return Response{}, fmt.Errorf("getting book: %w", err)
 	}
 
 	if err := b.BookSaver.Save(ctx, bookFromService); err != nil {
-		return Response{}, err
+		return Response{}, fmt.Errorf("saving book: %w", err)
 	}
-	return Response{Iban: bookFromService.Iban}, nil
+	return Response{ISBN: bookFromService.ISBN}, nil
 }
